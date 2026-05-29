@@ -76,6 +76,11 @@ nubes-custos aws -f cloudtrail.json --severity critical
 ```bash
 go build -o nubes-custos .
 ```
+or
+```
+go install github.com/outercastl3/nubes-custos@latest
+```
+to install globally
 
 ## Requirements
 - Go 1.21+
