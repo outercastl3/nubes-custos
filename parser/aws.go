@@ -38,3 +38,11 @@ type SessionAttributes struct {
   CreationDate string `json:"creationDate"`
 }
 
+func (r CloudTrailRecord) GetEventTime() time.Time { return r.EventTime }
+func (r CloudTrailRecord) GetEventName() string { return r.EventName }
+func (r CloudTrailRecord) GetSourceIP() string { return r.SourceIP }
+func (r CloudTrailRecord) GetUserName() string { return r.UserIdentity.UserName }
+func (r CloudTrailRecord) GetUserType() string         { return r.UserIdentity.Type }
+func (r CloudTrailRecord) GetRegion() string           { return r.AwsRegion }
+func (r CloudTrailRecord) GetMFAAuthenticated() bool   { return r.UserIdentity.SessionContext.Attributes.MFAAuthenticated == "true" }
+func (r CloudTrailRecord) GetProvider() string         { return "aws" }
