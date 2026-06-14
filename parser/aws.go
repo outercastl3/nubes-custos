@@ -1,6 +1,11 @@
 package parser
 
-import "time"
+import (
+	"os"
+	"time"
+	"encoding/json"
+	"fmt"
+)
 
 type CloudTrailLog struct {
   Records []CloudTrailRecord `json:"Records"`
@@ -46,3 +51,17 @@ func (r CloudTrailRecord) GetUserType() string         { return r.UserIdentity.T
 func (r CloudTrailRecord) GetRegion() string           { return r.AwsRegion }
 func (r CloudTrailRecord) GetMFAAuthenticated() bool   { return r.UserIdentity.SessionContext.Attributes.MFAAuthenticated == "true" }
 func (r CloudTrailRecord) GetProvider() string         { return "aws" }
+
+
+
+func ParseFile(path string) ([]CloudTrailRecord, error) {
+    data, err := os.ReadFile(path)
+    if err != nil {
+        return nil, fmt.Errorf("failed to read file: %w", err)
+    }
+    var log CloudTrailLog
+    if err := json.Unmarshal(data, &log); err != nil {
+        return nil, fmt.Errorf("failed to parse JSON: %w", err)
+    }
+    return log.Records, nil
+}
