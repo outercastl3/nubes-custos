@@ -5,6 +5,8 @@ import (
 	"time"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"path/filepath"
 )
 
 type CloudTrailLog struct {
@@ -64,4 +66,24 @@ func ParseFile(path string) ([]CloudTrailRecord, error) {
         return nil, fmt.Errorf("failed to parse JSON: %w", err)
     }
     return log.Records, nil
+}
+
+func ParseDirectory(path string) ([]CloudTrailRecord, error) {
+    var allRecords []CloudTrailRecord
+    entries, err := os.ReadDir(path)
+    if err != nil {
+        return nil, fmt.Errorf("failed to read directory: %w", err)
+    }
+    for _, entry := range entries {
+        if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
+            continue
+        }
+        records, err := ParseFile(filepath.Join(path, entry.Name()))
+        if err != nil {
+            fmt.Printf("warning: skipping %s: %v\n", entry.Name(), err)
+            continue
+        }
+        allRecords = append(allRecords, records...)
+    }
+    return allRecords, nil
 }
